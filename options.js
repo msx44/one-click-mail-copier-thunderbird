@@ -1,16 +1,16 @@
 // 初期状態のデフォルトテンプレート
 const defaultTemplate = "件名: {{subject}}\nDate: {{date}}\nFrom: {{from}}\n\n{{body}}";
 
-// 利用可能なマクロタグの定義
+// 利用可能なマクロタグの定義（説明文を多言語キーに変更）
 const tags = [
-  { name: "{{subject}}", desc: "件名" },
-  { name: "{{date}}", desc: "送信日時" },
-  { name: "{{from}}", desc: "送信者(From)" },
-  { name: "{{to}}", desc: "宛先(To)" },
-  { name: "{{cc}}", desc: "CC" },
-  { name: "{{bcc}}", desc: "BCC" },
-  { name: "{{id}}", desc: "メールID" },
-  { name: "{{body}}", desc: "本文(テキスト)" }
+  { name: "{{subject}}", descKey: "tagSubject" },
+  { name: "{{date}}", descKey: "tagDate" },
+  { name: "{{from}}", descKey: "tagFrom" },
+  { name: "{{to}}", descKey: "tagTo" },
+  { name: "{{cc}}", descKey: "tagCc" },
+  { name: "{{bcc}}", descKey: "tagBcc" },
+  { name: "{{id}}", descKey: "tagId" },
+  { name: "{{body}}", descKey: "tagBody" }
 ];
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -19,11 +19,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   const status = document.getElementById("status");
   const tagContainer = document.getElementById("tagContainer");
 
+  // HTML要素のテキストを多言語化
+  document.getElementById("optionsTitle").textContent = messenger.i18n.getMessage("optionsTitle");
+  document.getElementById("optionsDesc").textContent = messenger.i18n.getMessage("optionsDesc");
+  textarea.placeholder = messenger.i18n.getMessage("optionsPlaceholder");
+  saveBtn.textContent = messenger.i18n.getMessage("optionsSaveBtn");
+
   // タグボタンを安全に動生成
   tags.forEach(tag => {
     const span = document.createElement("span");
     span.className = "tag";
-    span.textContent = `${tag.name} [${tag.desc}]`;
+    const localizedDesc = messenger.i18n.getMessage(tag.descKey);
+    span.textContent = `${tag.name} [${localizedDesc}]`;
     
     // クリック時にカーソル位置にタグを挿入する親切設計
     span.addEventListener("click", () => {
@@ -44,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 設定を保存する
   saveBtn.addEventListener("click", async () => {
     await messenger.storage.local.set({ template: textarea.value });
-    status.textContent = "設定を保存しました！";
+    status.textContent = messenger.i18n.getMessage("optionsSaved");
     setTimeout(() => {
       status.textContent = "";
     }, 1500);
